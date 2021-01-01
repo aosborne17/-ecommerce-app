@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler'
 import User from '../models/userModel.js'
+import generateToken from '../utils/generateToken.js'
 
 
 // @description  Auth the user & get web token
@@ -20,7 +21,7 @@ const authUser = asyncHandler(async (req, res) => {
             name: user.name,
             email: user.email,
             isAdmin: user.isAdmin,
-            token: null
+            token: generateToken(user._id)
         })
     } else {
         // 401 means unauthorized, thus the user entered the incorrect creds
@@ -29,6 +30,34 @@ const authUser = asyncHandler(async (req, res) => {
     }
 })
 
+
+
+// @description  Get user profile
+// @route  GET /api/users/profile
+// @access Private
+
+
+const getUserProfile = asyncHandler(async (req, res) => {
+
+    const user = await User.findById(req.user._id)
+    if (user) {
+        // res.json(req.user)  // Note that this would also work as we already have the info from the database in our request
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+        })
+    } else {
+        res.status(404)
+        throw new Error('User not found')
+    }
+})
+
 export {
-    authUser
+    authUser,
+    getUserProfile
 }
+
+
+
