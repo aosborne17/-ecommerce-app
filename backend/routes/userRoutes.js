@@ -1,9 +1,11 @@
 import express from 'express'
 const router = express.Router()
-import {authUser, getUserProfile} from '../controllers/userController.js'
+import {authUser, registerUser, getUserProfile} from '../controllers/userController.js'
 import {protect} from '../middleware/authMiddleware.js'
 
 
+// This will allow a user to be registered
+router.post('/', registerUser)
 
 router.post('/login', authUser)
 

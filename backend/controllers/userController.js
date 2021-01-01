@@ -32,6 +32,51 @@ const authUser = asyncHandler(async (req, res) => {
 
 
 
+
+// @description  Register new user
+// @route  POST /api/users
+// @access Public
+
+
+const registerUser = asyncHandler(async (req, res) => {
+    const {name, email, password} = req.body
+
+    const userExists = await User.findOne({email:email})
+
+    // If they try to register with a email that is already in our database we will return an error
+    if (userExists) {
+        res.status(400)
+        throw new Error('User Already Exists')
+    }
+
+    // If the email isn't in our database, then we will go ahead and create a new user document
+    // We will pass in the information that we receive from the post request
+    // We will also make sure to hash the password before it is saved to the db
+    const user = await User.create({
+        name: name,
+        email: email,
+        password: password,
+    })
+
+    if (user) {
+        // 201 means something was created
+        res.status(201)
+        // After we create the user, we then return the data so we can authenticate them and log them in
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+            token: generateToken(user._id)
+        })
+    } else {
+        res.status(400)
+        throw new Error('Invalid User Data')
+    }
+})
+
+
+
 // @description  Get user profile
 // @route  GET /api/users/profile
 // @access Private
@@ -56,7 +101,8 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
 export {
     authUser,
-    getUserProfile
+    registerUser,
+    getUserProfile,
 }
 
 
