@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {CART_ADD_ITEM} from '../constants/cartConstants'
+import {CART_ADD_ITEM, CART_REMOVE_ITEM} from '../constants/cartConstants'
 
 export const addToCart = (id, qty) => async (dispatch, getState) => {
     const {data} = await axios.get(`/api/products/${id}`)
@@ -24,5 +24,18 @@ export const addToCart = (id, qty) => async (dispatch, getState) => {
     // We use json.stringify because we can only save strings in local storage
 
 
+    localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems))
+}
+
+
+
+export const removeFromCart = (id) => (dispatch, getState) => {
+    
+    dispatch({
+        type: CART_REMOVE_ITEM,
+        payload: id
+
+    })
+    // We then add the new cart items state to the local storage, thus the removed item will no longer be present
     localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems))
 }

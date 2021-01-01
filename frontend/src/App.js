@@ -16,6 +16,7 @@ const  App = () => {
         <Container>
           <Route exact path='/' component={HomeScreen} />
           <Route exact path='/product/:id' component={ProductScreen} />
+          {/* // the question mark after the id means that the id can be optional */}
           <Route exact path='/cart/:id?' component={CartScreen} />
         </Container>
       </main>

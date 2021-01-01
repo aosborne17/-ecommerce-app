@@ -7,6 +7,7 @@ import {listProductDetails} from '../actions/productActions'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 
+
 const ProductScreen = ({history, match}) => {
     const [qty, setQty] = useState(1)
     const dispatch = useDispatch()
@@ -20,6 +21,9 @@ const ProductScreen = ({history, match}) => {
         dispatch(listProductDetails(match.params.id))
         }, [dispatch, match])
 
+    
+    // This function runs when we click add to cart, it will push the user to the /cart page with the id of product they selected and the quantity of the product
+    // This is useful as in the cart screen we will be able to get the quantity, to sum up the number of items
     const addToCartHandler = () => {
         history.push(`/cart/${match.params.id}?qty=${qty}`)
     }
@@ -65,10 +69,12 @@ const ProductScreen = ({history, match}) => {
                                         Status:
                                     </Col>
                                     <Col>
+                                        {/* If there is at least one item in stock, then we will display the 'In Stock Text' */}
                                         {product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}
                                     </Col>
                                 </Row>
                             </ListGroup.Item>
+                            {/* This form will only show if there are any products in store, otherwise they will not be a able to set a quantity */}
                             {product.countInStock > 0 && (
                                 <ListGroup.Item>
                                     <Row>
