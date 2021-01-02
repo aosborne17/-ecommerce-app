@@ -6,6 +6,7 @@ import { Container } from 'react-bootstrap'
 import HomeScreen from './screens/HomeScreen'
 import ProductScreen from './screens/ProductScreen'
 import CartScreen from './screens/CartScreen'
+import LoginScreen from './screens/LoginScreen'
 
 
 const  App = () => {
@@ -14,6 +15,7 @@ const  App = () => {
       <Header />
       <main className="py-3">
         <Container>
+          <Route exact path='/login' component={LoginScreen} />
           <Route exact path='/' component={HomeScreen} />
           <Route exact path='/product/:id' component={ProductScreen} />
           {/* // the question mark after the id means that the id can be optional */}

@@ -110,7 +110,6 @@ const CartScreen = ({match, location, history}) => {
                     </ListGroup>
                 </Card>
             </Col>
-
         </Row>
     )
 }
