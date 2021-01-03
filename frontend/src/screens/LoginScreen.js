@@ -28,7 +28,7 @@ const LoginScreen = ({location, history}) => {
     const submitHandler = (e) => {
         e.preventDefault()
         // Dispatch action
-        // We pass in our email and password form the form
+        // We pass in our email and password from the form
         dispatch(login(email, password))
     }
     return (
