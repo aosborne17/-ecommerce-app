@@ -8,6 +8,7 @@ import {
   userDetailsReducer,
   userLoginReducer,
   userRegisterReducer,
+  userUpdateProfileReducer,
 } from './reducers/userReducers';
 
 const reducer = combineReducers({
@@ -17,6 +18,7 @@ const reducer = combineReducers({
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
   userDetails: userDetailsReducer,
+  userUpdateProfile: userUpdateProfileReducer,
 });
 
 // Here we are checking if there is anything in our cart from our local storage
@@ -31,8 +33,16 @@ const userInfoFromStorage = localStorage.getItem('userInfo')
   ? JSON.parse(localStorage.getItem('userInfo'))
   : null;
 
+const shippingAddressFromStorage = localStorage.getItem('shippingAddress')
+  ? JSON.parse(localStorage.getItem('shippingAddress'))
+  : {};
+
 const initialState = {
-  cart: { cartItems: cartItemsFromStorage },
+  // the cart reducer could have borth the cart items and the shipping address pulled in from local storage
+  cart: {
+    cartItems: cartItemsFromStorage,
+    shippingAddress: shippingAddressFromStorage,
+  },
   userLogin: { userInfo: userInfoFromStorage },
 };
 
