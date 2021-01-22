@@ -23,6 +23,14 @@ const ProfileScreen = ({ history }) => {
   const userUpdateProfile = useSelector((state) => state.userUpdateProfile);
   const { success } = userUpdateProfile;
 
+  const objects = [{ name: 'bruce' }, { name: 'james' }, { name: 'josh' }];
+
+  const names = objects.map((object) => {
+    if (object.name === 'bruce') {
+      return object;
+    }
+  });
+
   useEffect(() => {
     // here we are checking whethere there is a user in our local storage, if this is the case then we will redirect they user away
     if (!userInfo) {
