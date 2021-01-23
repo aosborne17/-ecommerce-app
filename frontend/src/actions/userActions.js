@@ -12,8 +12,19 @@ import {
   USER_UPDATE_PROFILE_REQUEST,
   USER_UPDATE_PROFILE_SUCCESS,
   USER_UPDATE_PROFILE_FAIL,
+  USER_DETAILS_RESET,
+  USER_LIST_REQUEST,
+  USER_LIST_SUCCESS,
+  USER_LIST_FAIL,
+  USER_DELETE_REQUEST,
+  USER_DELETE_SUCCESS,
+  USER_DELETE_FAIL,
+  USER_UPDATE_SUCCESS,
+  USER_UPDATE_FAIL,
+  USER_UPDATE_REQUEST,
 } from '../constants/userConstants';
 import axios from 'axios';
+import { ORDER_LIST_MY_RESET } from '../constants/orderConstants';
 
 // we want a lofgin action to get the token
 export const login = (email, password) => async (dispatch) => {
@@ -62,6 +73,10 @@ export const login = (email, password) => async (dispatch) => {
 
 export const logout = () => (dispatch) => {
   localStorage.removeItem('userInfo');
+  // when the user logs out, we will reset the state of these reducers
+  dispatch({ type: USER_DETAILS_RESET });
+  dispatch({ type: ORDER_LIST_MY_RESET });
+
   dispatch({ type: USER_LOGOUT });
 };
 
@@ -195,6 +210,127 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: USER_UPDATE_PROFILE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+export const getUserList = () => async (dispatch, getState) => {
+  try {
+    // set loading to true to show our spinner
+    dispatch({
+      type: USER_LIST_REQUEST,
+    });
+
+    // we need to get the userInfo inside the state, so we can access the token
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        // the auth token allows our backend to find out which user is requesting the data
+        // from our backend we can then get this id and query our database to return the right data
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    // this get request will get a list of all the users in our DB
+    const response = await axios.get(`/api/users`, config);
+    console.log(response);
+
+    dispatch({
+      type: USER_LIST_SUCCESS,
+      // the data will be all the users
+      payload: response.data,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_LIST_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+export const deleteUser = (id) => async (dispatch, getState) => {
+  try {
+    // set loading to true to show our spinner
+    dispatch({
+      type: USER_DELETE_REQUEST,
+    });
+
+    // we need to get the userInfo inside the state, so we can access the token
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        // the auth token allows our backend to find out which user is requesting the data
+        // from our backend we can then get this id and query our database to return the right data
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    // this will delete the user with the id we pass in
+    await axios.delete(`/api/users/${id}`, config);
+
+    dispatch({
+      type: USER_DELETE_SUCCESS,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_DELETE_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+export const updateUser = (user) => async (dispatch, getState) => {
+  try {
+    // set loading to true to show our spinner
+    dispatch({
+      type: USER_UPDATE_REQUEST,
+    });
+
+    // we need to get the userInfo inside the state, so we can access the token
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        // the auth token allows our backend to find out which user is requesting the data
+        // from our backend we can then get this id and query our database to return the right data
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    // this will update the user with the id we pass in
+    const response = await axios.put(`/api/users/${user._id}`, user, config);
+
+    dispatch({
+      type: USER_UPDATE_SUCCESS,
+    });
+
+    // so once we have received the updated user, we can pass this data back into the state
+    dispatch({
+      type: USER_DETAILS_SUCCESS,
+      payload: response.data,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_UPDATE_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message

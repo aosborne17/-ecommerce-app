@@ -88,3 +88,16 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 });
 
 export { updateOrderToPaid };
+
+// @description  get logged in user orders
+// @route  GET /api/orders/myorders
+// @access Private
+
+const getMyOrders = asyncHandler(async (req, res) => {
+  // here we only want the orders where the user field is the same as the logged in user
+  const orders = await Order.find({ user: req.user._id });
+
+  res.status(200).json(orders);
+});
+
+export { getMyOrders };

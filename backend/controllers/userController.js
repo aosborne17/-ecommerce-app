@@ -120,4 +120,85 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-export { authUser, registerUser, getUserProfile, updateUserProfile };
+// @description  Get all users
+// @route  GET /api/users
+// @access Private/Admin
+
+const getUsers = asyncHandler(async (req, res) => {
+  // this will return all the users in the user model
+  const users = await User.find({});
+  res.status(200).json(users);
+});
+
+// @description  Delete User By Id
+// @route  DELETE /api/users/:id
+// @access Private/Admin
+
+const deleteUserById = asyncHandler(async (req, res) => {
+  // we will get the id from the route paramaters
+  const user = await User.findById(req.params.id);
+  if (user) {
+    // this is how we remove fields in our database
+    await user.remove();
+    res.json({ message: 'User Removed' });
+  } else {
+    res.status(404);
+    throw new Error('User Not Found');
+  }
+});
+
+// @description  Get user by Id
+// @route  GET /api/users/:id
+// @access Private/Admin
+
+const getUserById = asyncHandler(async (req, res) => {
+  // this will return all the users in the user model
+  const user = await User.findById(req.params.id).select('-password');
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    res.status(404);
+    throw new Error('User Not Found');
+  }
+});
+
+// @description  Update user
+// @route  PUT /api/users/:id
+// @access Private/Admin
+
+// this is different to updateUserProfile as only the admin can access this route
+// and also it allows the admin to update any profile, not just their own
+const updateUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    // if the body response contains update info then we take it
+    // otherwise, we just keep their details the same
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    user.isAdmin = req.body.isAdmin;
+
+    // We then take these updated details and save them to the database
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+export {
+  authUser,
+  registerUser,
+  getUserProfile,
+  updateUserProfile,
+  getUsers,
+  deleteUserById,
+  getUserById,
+  updateUserById,
+};
